@@ -10,7 +10,7 @@ async function bootstrap() {
   //* Config swagger
   swaggerConfigInit(app)
 
-  const { PORT = 4500 } = process.env
+  const { PORT = 4504 } = process.env
 
   await app.listen(PORT, () => {
     logger.log(`nest application is running on port ${PORT}`)
