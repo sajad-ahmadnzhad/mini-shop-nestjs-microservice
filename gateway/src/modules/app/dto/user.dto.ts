@@ -31,3 +31,18 @@ export class SignupDto {
     @Length(8, 32)
     password: string
 }
+
+export class SigninDto {
+    @ApiProperty({ type: 'string', nullable: false })
+    @IsNotEmpty()
+    @IsString()
+    @Transform(({ value }) => value?.trim())
+    identifier: string
+
+    @ApiProperty({ type: 'string', nullable: false, maxLength: 8, minLength: 32 })
+    @IsNotEmpty()
+    @IsString()
+    @Transform(({ value }) => value?.trim())
+    @Length(8, 32)
+    password: string
+}
