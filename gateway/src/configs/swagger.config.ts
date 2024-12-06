@@ -4,7 +4,7 @@ import { SecuritySchemeObject } from "@nestjs/swagger/dist/interfaces/open-api-s
 
 export const swaggerConfigInit = (app: INestApplication) => {
     const swaggerConfig = new DocumentBuilder()
-        .setTitle("Mini online shop")
+        .setTitle("Mini online shop microservice")
         .addBearerAuth(swaggerAuthConfig(), "Authorization")
         .build();
 
