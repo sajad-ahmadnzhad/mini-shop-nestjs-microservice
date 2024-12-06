@@ -7,6 +7,6 @@ import { ApiTags } from "@nestjs/swagger";
 export class PaymentController {
     constructor(@Inject('PAYMENT_SERVICE') private readonly paymentServiceClientProxy: ClientProxy) { }
 
-
+    
 
 }

@@ -8,7 +8,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: ['amqp://localhost:5672'],
-      queue: "payment-service",
+      queue: "auth-service",
       queueOptions: {
         durable: false
       }
@@ -18,6 +18,6 @@ async function bootstrap() {
   const logger = new Logger("NestApplication")
 
   await app.listen();
-  logger.log('Payment service is running')
+  logger.log('Auth service is running')
 }
 bootstrap();

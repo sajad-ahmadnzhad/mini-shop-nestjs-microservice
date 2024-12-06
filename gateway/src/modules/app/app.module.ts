@@ -3,7 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
-import envConfig from 'src/configs/env.config';
+import envConfig from '../../configs/env.config';
+import { OrderController } from './controllers/order.controller';
+import { PaymentController } from './controllers/payment.controller';
+import { NotificationController } from './controllers/notification.controller';
+import { InventoryController } from './controllers/inventory.controller';
 
 @Module({
   imports: [
@@ -11,6 +15,17 @@ import envConfig from 'src/configs/env.config';
     ClientsModule.register({
       isGlobal: true,
       clients: [
+        {
+          name: "AUTH_SERVICE",
+          transport: Transport.RMQ,
+          options: {
+            urls: ['amqp://localhost:5672'],
+            queue: "auth-service",
+            queueOptions: {
+              durable: false,
+            }
+          }
+        },
         {
           name: "ORDER_SERVICE",
           transport: Transport.RMQ,
@@ -58,7 +73,7 @@ import envConfig from 'src/configs/env.config';
       ]
     })
   ],
-  controllers: [AppController],
+  controllers: [AppController, OrderController, PaymentController, NotificationController, InventoryController],
   providers: [AppService],
 })
 export class AppModule { }
