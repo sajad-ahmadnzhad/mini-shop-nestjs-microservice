@@ -16,6 +16,12 @@ export default (): ConfigModuleOptions => {
                 GOOGLE_CLIENT_ID: Joi.string().required(),
                 GOOGLE_CLIENT_SECRET: Joi.string().required(),
                 GOOGLE_CALLBACK_URL: Joi.string().required(),
+                DB_HOST: Joi.string().required(),
+                DB_PORT: Joi.string().required(),
+                DB_USERNAME: Joi.string().required(),
+                DB_PASSWORD: Joi.string().required(),
+                DB_NAME: Joi.string().required(),
+                DB_SYNCHRONIZE: Joi.string().required(),
             }).unknown(true)
 
             const { error, value } = schema.validate(config)

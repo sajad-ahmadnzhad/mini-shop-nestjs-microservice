@@ -4,6 +4,7 @@ import * as Joi from "joi";
 export default (): ConfigModuleOptions => {
     return {
         isGlobal: true,
+        envFilePath: process.cwd() + "/.env",
         validate: (config: Record<string, any>) => {
             const schema = Joi.object({
                 PORT: Joi.string().required()
