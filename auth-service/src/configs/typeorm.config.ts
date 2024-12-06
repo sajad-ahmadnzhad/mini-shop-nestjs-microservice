@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { User } from "../entities/user.entity";
 
 export const typeormConfig = (): TypeOrmModuleOptions => {
   const {
@@ -9,15 +10,16 @@ export const typeormConfig = (): TypeOrmModuleOptions => {
     DB_NAME,
     DB_SYNCHRONIZE,
   } = process.env;
+
   return {
-    type: "mysql",
+    type: "postgres",
     host: DB_HOST,
     port: Number(DB_PORT),
     username: DB_USERNAME,
     password: DB_PASSWORD,
     database: DB_NAME,
     synchronize: !!Number(DB_SYNCHRONIZE),
-    entities: [],
+    entities: [User],
     autoLoadEntities: false,
   };
 };

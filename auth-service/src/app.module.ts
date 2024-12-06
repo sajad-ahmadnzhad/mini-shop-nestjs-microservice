@@ -6,11 +6,13 @@ import envConfig from './configs/env.config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeormConfig } from './configs/typeorm.config';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeormConfig()),
     ConfigModule.forRoot(envConfig()),
+    TypeOrmModule.forRoot(typeormConfig()),
+    TypeOrmModule.forFeature([User]),
     JwtModule.register({
       global: true,
     })

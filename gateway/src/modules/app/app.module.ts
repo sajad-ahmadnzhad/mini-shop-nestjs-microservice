@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -8,6 +8,8 @@ import { OrderController } from './controllers/order.controller';
 import { PaymentController } from './controllers/payment.controller';
 import { NotificationController } from './controllers/notification.controller';
 import { InventoryController } from './controllers/inventory.controller';
+import { AuthController } from './controllers/auth.controller';
+import { APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -73,7 +75,10 @@ import { InventoryController } from './controllers/inventory.controller';
       ]
     })
   ],
-  controllers: [AppController, OrderController, PaymentController, NotificationController, InventoryController],
-  providers: [AppService],
+  controllers: [AppController, OrderController, PaymentController, NotificationController, InventoryController, AuthController],
+  providers: [AppService, {
+    provide: APP_PIPE,
+    useValue: new ValidationPipe({ whitelist: true })
+  }],
 })
 export class AppModule { }
