@@ -3,6 +3,7 @@ import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom } from "rxjs";
 import { SigninDto, SignupDto } from "../dto/user.dto";
+import { ServiceResponse } from "src/common/types/serviceResponse.type";
 
 @Controller('auth')
 @ApiTags('auth')
@@ -12,7 +13,7 @@ export class AuthController {
     @Post('signup')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async signup(@Body() signupDto: SignupDto) {
-        const data = await lastValueFrom(this.authServiceClientProxy.send('signup', signupDto))
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signup', signupDto))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
@@ -24,7 +25,7 @@ export class AuthController {
     @Post('signin')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async signin(@Body() signinDto: SigninDto) {
-        const data = await lastValueFrom(this.authServiceClientProxy.send('signin', signinDto))
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signin', signinDto))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
