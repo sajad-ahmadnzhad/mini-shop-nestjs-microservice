@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { ISignin } from './interfaces/signin.interface';
+import { sendError } from './common/utils/functions.utils';
 
 @Injectable()
 export class AppService {
@@ -55,11 +56,7 @@ export class AppService {
         data: { ...tokens }
       }
     } catch (error) {
-      return {
-        message: error.message || "Internal auth service error",
-        error: true,
-        status: error.status || HttpStatus.INTERNAL_SERVER_ERROR
-      }
+      return sendError(error)
     }
   }
 
@@ -93,11 +90,7 @@ export class AppService {
       }
 
     } catch (error) {
-      return {
-        message: error.message || "Internal auth service error",
-        error: true,
-        status: error.status || HttpStatus.INTERNAL_SERVER_ERROR
-      }
+      return sendError(error)
     }
   }
 }
