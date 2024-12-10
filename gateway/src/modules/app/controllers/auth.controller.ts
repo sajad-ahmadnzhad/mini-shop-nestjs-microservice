@@ -1,9 +1,11 @@
-import { Body, Controller, Get, HttpException, Inject, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Inject, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom } from "rxjs";
 import { RefreshTokenDto, SigninDto, SignupDto } from "../dto/user.dto";
 import { ServiceResponse } from "../../../common/types/serviceResponse.type";
+import { AuthGuard } from "@nestjs/passport";
+import { Request } from "express";
 
 @Controller('auth')
 @ApiTags('auth')
@@ -46,7 +48,23 @@ export class AuthController {
         return data
     }
 
+    @Get('google/login')
+    @UseGuards(AuthGuard('google'))
+    googleOauth() { }
 
-    
+
+    @Get('google/redirect')
+    @UseGuards(AuthGuard('google'))
+    async googleRedirect(@Req() req: Request) {
+        const { user } = req
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('googleRedirect', user))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
 
 }
