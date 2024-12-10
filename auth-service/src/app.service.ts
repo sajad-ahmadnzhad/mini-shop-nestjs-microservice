@@ -13,7 +13,6 @@ import { IGoogleOauthUser } from './interfaces/googleOauth.interface';
 
 @Injectable()
 export class AppService {
-
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
@@ -22,7 +21,7 @@ export class AppService {
 
   async setRefreshTokenInRedis(userId: number, refreshToken: string) {
     const cacheKey = `refreshToken_${userId}_${refreshToken}`
-    await this.redisCache.set(cacheKey, refreshToken)
+    await this.redisCache.set(cacheKey, refreshToken, 60 * 60 * 24 * 30 * 1000)
   }
 
   async generateTokens(user: User) {
@@ -85,7 +84,7 @@ export class AppService {
         throw new NotFoundException('User not found')
 
 
-      const isValidPassword = await bcrypt.compare(password, existingUser.password)
+      const isValidPassword = await bcrypt.compare(password, existingUser.password || '')
 
       if (!isValidPassword) {
         throw new BadRequestException('Invalid identifier or password')
@@ -174,6 +173,28 @@ export class AppService {
         data: { ...tokens }
       }
 
+    } catch (error) {
+      return sendError(error)
+    }
+  }
+
+  async signout(refreshToken: string) {
+    try {
+      await this.validateRefreshToken(refreshToken)
+
+      const { REFRESH_TOKEN_SECRET } = process.env
+      let decodeToken = this.jwtService.verify<{ id: number }>(refreshToken, { secret: REFRESH_TOKEN_SECRET })
+
+      if (!decodeToken?.id) throw new BadRequestException('Invalid refresh token')
+
+      await this.redisCache.del(`refreshToken_${decodeToken.id}_${refreshToken}`)
+
+      return {
+        message: "signout success",
+        error: false,
+        status: HttpStatus.OK,
+        data: {}
+      }
     } catch (error) {
       return sendError(error)
     }

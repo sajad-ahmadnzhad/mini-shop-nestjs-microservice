@@ -24,6 +24,11 @@ export class AppController {
     return this.appService.refreshToken(refreshToken)
   }
 
+  @MessagePattern('signout')
+  signout({ refreshToken }: { refreshToken: string }) {
+    return this.appService.signout(refreshToken)
+  }
+
   @MessagePattern('googleRedirect')
   googleRedirect(user: IGoogleOauthUser | undefined) {
     return this.appService.googleRedirect(user)

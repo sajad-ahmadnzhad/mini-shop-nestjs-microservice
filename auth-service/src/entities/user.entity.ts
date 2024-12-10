@@ -18,7 +18,7 @@ export class User {
     avatarURL: string | undefined
 
     @Column({ type: "varchar", select: false, nullable: true })
-    password: string
+    password: string | undefined
 
     @Column({ type: "bool", default: false })
     is_verify_email: boolean

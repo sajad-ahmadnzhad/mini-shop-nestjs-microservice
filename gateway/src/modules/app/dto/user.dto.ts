@@ -54,3 +54,5 @@ export class RefreshTokenDto {
     @IsJWT()
     refreshToken: string
 }
+
+export class SignoutDto extends RefreshTokenDto { }

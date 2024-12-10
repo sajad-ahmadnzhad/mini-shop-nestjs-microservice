@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpException, Inject, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Inject, Post, Req, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom } from "rxjs";
-import { RefreshTokenDto, SigninDto, SignupDto } from "../dto/user.dto";
+import { RefreshTokenDto, SigninDto, SignoutDto, SignupDto } from "../dto/user.dto";
 import { ServiceResponse } from "../../../common/types/serviceResponse.type";
 import { AuthGuard } from "@nestjs/passport";
 import { Request } from "express";
@@ -28,6 +28,18 @@ export class AuthController {
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async signin(@Body() signinDto: SigninDto) {
         const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signin', signinDto))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
+
+    @Post('signout')
+    @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
+    async signout(@Body() signoutDto: SignoutDto) {
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signout', signoutDto))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
