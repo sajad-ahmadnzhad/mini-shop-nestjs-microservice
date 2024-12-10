@@ -3,7 +3,7 @@ import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom } from "rxjs";
 import { SigninDto, SignupDto } from "../dto/user.dto";
-import { ServiceResponse } from "src/common/types/serviceResponse.type";
+import { ServiceResponse } from "../../../common/types/serviceResponse.type";
 
 @Controller('auth')
 @ApiTags('auth')

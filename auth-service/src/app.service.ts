@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ISignup } from './interfaces/signup.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,16 +7,28 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { ISignin } from './interfaces/signin.interface';
 import { sendError } from './common/utils/functions.utils';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { RedisCache } from 'cache-manager-redis-yet';
 
 @Injectable()
 export class AppService {
 
   constructor(
     private readonly jwtService: JwtService,
-    @InjectRepository(User) private readonly userRepository: Repository<User>
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @Inject(CACHE_MANAGER) private readonly redisCache: RedisCache
   ) { }
 
-  generateTokens(user: User) {
+  async setRefreshTokenInRedis(userId: number, refreshToken: string) {
+    const cacheKey = `user:${userId}`
+    const existingToken = await this.redisCache.get(cacheKey)
+
+    if (existingToken) await this.redisCache.del(cacheKey)
+
+    await this.redisCache.set(cacheKey, refreshToken)
+  }
+
+  async generateTokens(user: User) {
     const {
       ACCESS_TOKEN_SECRET,
       REFRESH_TOKEN_SECRET,
@@ -27,6 +39,9 @@ export class AppService {
 
     const accessToken = this.jwtService.sign({ id: user.id }, { secret: ACCESS_TOKEN_SECRET, expiresIn: ACCESS_TOKEN_EXPIRE_TIME })
     const refreshToken = this.jwtService.sign({ id: user.id }, { secret: REFRESH_TOKEN_SECRET, expiresIn: REFRESH_TOKEN_EXPIRE_TIME })
+
+
+    await this.setRefreshTokenInRedis(user.id, refreshToken)
 
     return { accessToken, refreshToken }
   }
