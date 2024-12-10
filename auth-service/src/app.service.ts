@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ISignup } from './interfaces/signup.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { ISignin } from './interfaces/signin.interface';
 import { sendError } from './common/utils/functions.utils';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { RedisCache } from 'cache-manager-redis-yet';
+import { IGoogleOauthUser } from './interfaces/googleOauth.interface';
 
 @Injectable()
 export class AppService {
@@ -140,6 +141,42 @@ export class AppService {
       return sendError(error)
     }
 
+  }
+
+  async googleRedirect(user: IGoogleOauthUser | undefined) {
+    try {
+      if (!user) throw new UnauthorizedException('The information entered is insufficient')
+
+      const existingUser = await this.userRepository.findOne({
+        where: [{ email: user.email }, { username: user.username }]
+      })
+
+      if (existingUser) {
+        const tokens = await this.generateTokens(existingUser)
+        return {
+          message: "signin success",
+          error: false,
+          status: HttpStatus.OK,
+          data: { ...tokens }
+        }
+      }
+
+      const newUser = this.userRepository.create(user)
+
+      await this.userRepository.save(newUser)
+
+      const tokens = await this.generateTokens(newUser)
+
+      return {
+        message: "signup success",
+        error: false,
+        status: HttpStatus.CREATED,
+        data: { ...tokens }
+      }
+
+    } catch (error) {
+      return sendError(error)
+    }
   }
 
 }
