@@ -10,6 +10,7 @@ import { NotificationController } from './controllers/notification.controller';
 import { InventoryController } from './controllers/inventory.controller';
 import { AuthController } from './controllers/auth.controller';
 import { APP_PIPE } from '@nestjs/core';
+import { GoogleStrategy } from '../../common/strategic/google.strategy';
 
 @Module({
   imports: [
@@ -76,7 +77,7 @@ import { APP_PIPE } from '@nestjs/core';
     })
   ],
   controllers: [AppController, OrderController, PaymentController, NotificationController, InventoryController, AuthController],
-  providers: [AppService, {
+  providers: [AppService, GoogleStrategy, {
     provide: APP_PIPE,
     useValue: new ValidationPipe({ whitelist: true })
   }],

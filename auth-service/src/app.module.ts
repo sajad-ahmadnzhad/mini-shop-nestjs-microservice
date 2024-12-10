@@ -9,7 +9,6 @@ import { typeormConfig } from './configs/typeorm.config';
 import { User } from './entities/user.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import cacheConfig from './configs/cache.config';
-import { GoogleStrategy } from './strategic/google.strategy';
 
 @Module({
   imports: [
@@ -22,6 +21,6 @@ import { GoogleStrategy } from './strategic/google.strategy';
     })
   ],
   controllers: [AppController],
-  providers: [AppService, GoogleStrategy],
+  providers: [AppService],
 })
 export class AppModule { }
