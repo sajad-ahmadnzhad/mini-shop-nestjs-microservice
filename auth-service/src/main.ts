@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { Transport, RmqOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(AppModule, {
+  const app = await NestFactory.createMicroservice<RmqOptions>(AppModule, {
     transport: Transport.RMQ,
     options: {
       urls: ['amqp://localhost:5672'],
@@ -13,7 +13,7 @@ async function bootstrap() {
         durable: false
       }
     }
-  } as RmqOptions);
+  });
 
   const logger = new Logger("NestApplication")
 

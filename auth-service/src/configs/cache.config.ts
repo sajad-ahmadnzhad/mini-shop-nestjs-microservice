@@ -1,4 +1,4 @@
-import { CacheModuleAsyncOptions, CacheModuleOptions } from "@nestjs/cache-manager";
+import { CacheModuleAsyncOptions } from "@nestjs/cache-manager";
 import { redisStore } from "cache-manager-redis-yet";
 
 export default (): CacheModuleAsyncOptions => {

@@ -17,4 +17,9 @@ export class AppController {
   signin(dto: ISignin) {
     return this.appService.signin(dto)
   }
+
+  @MessagePattern('refreshToken')
+  refreshToken(refreshToken: string) {
+    return this.appService.refreshToken(refreshToken)
+  }
 }

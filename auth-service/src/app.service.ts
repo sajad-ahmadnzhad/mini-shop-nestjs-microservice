@@ -20,11 +20,7 @@ export class AppService {
   ) { }
 
   async setRefreshTokenInRedis(userId: number, refreshToken: string) {
-    const cacheKey = `user:${userId}`
-    const existingToken = await this.redisCache.get(cacheKey)
-
-    if (existingToken) await this.redisCache.del(cacheKey)
-
+    const cacheKey = `refreshToken_${userId}_${refreshToken}`
     await this.redisCache.set(cacheKey, refreshToken)
   }
 
@@ -62,7 +58,7 @@ export class AppService {
 
       await this.userRepository.save(user)
 
-      const tokens = this.generateTokens(user)
+      const tokens = await this.generateTokens(user)
 
       return {
         message: 'successfully signup',
@@ -94,8 +90,7 @@ export class AppService {
         throw new BadRequestException('Invalid identifier or password')
       }
 
-
-      const tokens = this.generateTokens(existingUser)
+      const tokens = await this.generateTokens(existingUser)
 
       return {
         message: 'successfully signin',
@@ -108,4 +103,43 @@ export class AppService {
       return sendError(error)
     }
   }
+
+  protected async validateRefreshToken(refreshToken: string): Promise<boolean> {
+    const { id } = this.jwtService.decode<{ id: number }>(refreshToken) || {}
+    const cacheKey = `refreshToken_${id}_${refreshToken}`
+    const storedToken = await this.redisCache.get(cacheKey)
+
+    if (!storedToken || storedToken !== refreshToken) {
+      throw new BadRequestException('invalid refresh token')
+    }
+
+    return true
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      await this.validateRefreshToken(refreshToken)
+
+      const { id } = this.jwtService.verify<{ id: number }>(refreshToken, {
+        secret: process.env.REFRESH_TOKEN_SECRET as string
+      })
+
+      const newAccessToken = this.jwtService.sign({ id }, {
+        secret: process.env.ACCESS_TOKEN_SECRET as string,
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRE_TIME as string
+      })
+
+
+      return {
+        message: 'refreshed token success',
+        error: false,
+        status: HttpStatus.CREATED,
+        data: { newAccessToken }
+      }
+    } catch (error) {
+      return sendError(error)
+    }
+
+  }
+
 }

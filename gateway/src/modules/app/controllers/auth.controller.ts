@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpException, Inject, Post } from "@nestjs/comm
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom } from "rxjs";
-import { SigninDto, SignupDto } from "../dto/user.dto";
+import { RefreshTokenDto, SigninDto, SignupDto } from "../dto/user.dto";
 import { ServiceResponse } from "../../../common/types/serviceResponse.type";
 
 @Controller('auth')
@@ -26,6 +26,18 @@ export class AuthController {
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async signin(@Body() signinDto: SigninDto) {
         const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signin', signinDto))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
+
+    @Post('refresh-token')
+    @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
+    async refreshToken(@Body() { refreshToken }: RefreshTokenDto) {
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('refreshToken', refreshToken))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)

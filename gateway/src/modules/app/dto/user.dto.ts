@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer"
-import { IsEmail, IsNotEmpty, IsString, Length } from "class-validator"
+import { IsEmail, IsJWT, IsNotEmpty, IsString, Length } from "class-validator"
 import { ApiProperty } from '@nestjs/swagger'
 
 export class SignupDto {
@@ -45,4 +45,12 @@ export class SigninDto {
     @Transform(({ value }) => value?.trim())
     @Length(8, 32)
     password: string
+}
+
+export class RefreshTokenDto {
+    @ApiProperty({ type: 'string', nullable: false })
+    @IsNotEmpty()
+    @IsString()
+    @IsJWT()
+    refreshToken: string
 }

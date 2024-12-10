@@ -13,7 +13,7 @@ import cacheConfig from './configs/cache.config';
 @Module({
   imports: [
     ConfigModule.forRoot(envConfig()),
-    CacheModule.register(cacheConfig()),
+    CacheModule.registerAsync(cacheConfig()),
     TypeOrmModule.forRoot(typeormConfig()),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
