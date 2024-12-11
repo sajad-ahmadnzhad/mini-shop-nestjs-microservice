@@ -1,7 +1,7 @@
-import { Body, Controller, Get, HttpException, Inject, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, OnModuleInit, Post, Req, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
-import { lastValueFrom } from "rxjs";
+import { lastValueFrom, timeout } from "rxjs";
 import { RefreshTokenDto, SigninDto, SignoutDto, SignupDto } from "../dto/user.dto";
 import { ServiceResponse } from "../../../common/types/serviceResponse.type";
 import { AuthGuard } from "@nestjs/passport";
@@ -12,10 +12,21 @@ import { Request } from "express";
 export class AuthController {
     constructor(@Inject('AUTH_SERVICE') private readonly authServiceClientProxy: ClientProxy) { }
 
+    async checkConnection() {
+        try {
+            await lastValueFrom(this.authServiceClientProxy.send('checkConnection', {}).pipe(timeout(5000)))
+        } catch (error) {
+            throw new InternalServerErrorException("auth service is not connected")
+        }
+
+    }
+
     @Post('signup')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async signup(@Body() signupDto: SignupDto) {
-        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signup', signupDto))
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signup', signupDto).pipe(timeout(5000)))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
@@ -27,7 +38,9 @@ export class AuthController {
     @Post('signin')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async signin(@Body() signinDto: SigninDto) {
-        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signin', signinDto))
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signin', signinDto).pipe(timeout(5000)))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
@@ -39,7 +52,9 @@ export class AuthController {
     @Post('signout')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async signout(@Body() signoutDto: SignoutDto) {
-        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signout', signoutDto))
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('signout', signoutDto).pipe(timeout(5000)))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
@@ -51,7 +66,9 @@ export class AuthController {
     @Post('refresh-token')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async refreshToken(@Body() { refreshToken }: RefreshTokenDto) {
-        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('refreshToken', refreshToken))
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('refreshToken', refreshToken).pipe(timeout(5000)))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
@@ -70,7 +87,9 @@ export class AuthController {
     async googleRedirect(@Req() req: Request) {
         const { user } = req
 
-        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('googleRedirect', user))
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('googleRedirect', user).pipe(timeout(5000)))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)

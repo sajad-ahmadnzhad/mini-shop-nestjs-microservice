@@ -34,4 +34,9 @@ export class AppController {
     return this.appService.googleRedirect(user)
   }
 
+  @MessagePattern('checkConnection')
+  checkConnection() {
+    return true
+  }
+
 }
