@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, OnModuleInit, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Post, Req, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
@@ -81,7 +81,6 @@ export class AuthController {
     @UseGuards(AuthGuard('google'))
     googleOauth() { }
 
-
     @Get('google/redirect')
     @UseGuards(AuthGuard('google'))
     async googleRedirect(@Req() req: Request) {
@@ -98,4 +97,5 @@ export class AuthController {
         return data
     }
 
+    
 }

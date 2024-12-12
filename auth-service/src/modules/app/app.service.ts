@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { ISignin } from './interfaces/signin.interface';
-import { sendError } from './common/utils/functions.utils';
+import { sendError } from '../../common/utils/functions.utils';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { RedisCache } from 'cache-manager-redis-yet';
 import { IGoogleOauthUser } from './interfaces/googleOauth.interface';
