@@ -1,6 +1,7 @@
-import { Transform } from "class-transformer"
-import { IsEmail, IsJWT, IsNotEmpty, IsString, Length } from "class-validator"
+import { Transform, Type } from "class-transformer"
+import { ArrayUnique, IsArray, IsEmail, IsEnum, IsJWT, IsLowercase, IsNotEmpty, IsString, Length, ValidateNested } from "class-validator"
 import { ApiProperty } from '@nestjs/swagger'
+import { Action, Resource } from "../enums/user.enum"
 
 export class SignupDto {
     @ApiProperty({ type: "string", nullable: false, maxLength: 500, minLength: 3 })
@@ -56,3 +57,36 @@ export class RefreshTokenDto {
 }
 
 export class SignoutDto extends RefreshTokenDto { }
+
+
+
+export class CreateRoleDto {
+    @ApiProperty({ type: 'string', nullable: false })
+    @IsString()
+    @IsNotEmpty()
+    @IsLowercase()
+    @Transform(({ value }) => value?.trim())
+    name: string
+
+    @ApiProperty({ type: 'array', nullable: false, uniqueItems: true, isArray: true, items: { nullable: false } })
+    @IsArray()
+    @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => CreatePermissionDto)
+    permissions: CreatePermissionDto[]
+}
+
+export class CreatePermissionDto {
+    @ApiProperty({ type: 'string', nullable: false, enum: Resource })
+    @IsEnum(Resource)
+    @IsNotEmpty()
+    @IsString()
+    resource: Resource
+
+    @ApiProperty({ type: 'array', nullable: false, isArray: true, uniqueItems: true, items: { nullable: false, type: "string", enum: ['create', 'read', 'update', 'delete'] } })
+    @IsEnum(Action, { each: true })
+    @IsNotEmpty()
+    @IsArray()
+    @ArrayUnique()
+    actions: Action[]
+}

@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpException, Inject, InternalServerErrorExcept
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
-import { RefreshTokenDto, SigninDto, SignoutDto, SignupDto } from "../dto/user.dto";
+import { CreateRoleDto, RefreshTokenDto, SigninDto, SignoutDto, SignupDto } from "../dto/user.dto";
 import { ServiceResponse } from "../../../common/types/serviceResponse.type";
 import { AuthGuard } from "@nestjs/passport";
 import { Request } from "express";
@@ -98,4 +98,16 @@ export class AuthController {
     }
 
 
+
+    @Post('role')
+    @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
+    async createRole(@Body() createRoleDto: CreateRoleDto) {
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('create-role', createRoleDto).pipe(timeout(5000)))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
 }

@@ -6,19 +6,19 @@ import envConfig from '../../configs/env.config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeormConfig } from '../../configs/typeorm.config';
-import { User } from './entities/user.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import cacheConfig from '../../configs/cache.config';
+import { RoleModule } from '../role/role.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(envConfig()),
     CacheModule.registerAsync(cacheConfig()),
     TypeOrmModule.forRoot(typeormConfig()),
-    TypeOrmModule.forFeature([User]),
     JwtModule.register({
       global: true,
-    })
+    }),
+    RoleModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,7 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { User } from "../modules/app/entities/user.entity";
+import { Permission } from "../modules/role/entities/permission.entity";
+import { Role } from "../modules/role/entities/role.entity";
 
 export const typeormConfig = (): TypeOrmModuleOptions => {
   const {
@@ -19,7 +21,7 @@ export const typeormConfig = (): TypeOrmModuleOptions => {
     password: DB_PASSWORD,
     database: DB_NAME,
     synchronize: !!Number(DB_SYNCHRONIZE),
-    entities: [User],
+    entities: [User, Permission, Role],
     autoLoadEntities: false,
   };
 };
