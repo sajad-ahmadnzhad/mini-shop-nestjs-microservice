@@ -65,7 +65,7 @@ export class AuthController {
 
     @Post('refresh-token')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
-    async refreshToken(@Body() { refreshToken }: RefreshTokenDto) {
+    async refreshToken(@Body() refreshToken: RefreshTokenDto) {
         await this.checkConnection()
 
         const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('refreshToken', refreshToken).pipe(timeout(5000)))
@@ -97,5 +97,5 @@ export class AuthController {
         return data
     }
 
-    
+
 }

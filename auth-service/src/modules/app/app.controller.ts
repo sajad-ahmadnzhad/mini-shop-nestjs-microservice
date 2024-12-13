@@ -10,17 +10,17 @@ export class AppController {
   constructor(private readonly appService: AppService) { }
 
   @MessagePattern('signup')
-  signup(dto: ISignup) {
-    return this.appService.signup(dto);
+  signup(payload: ISignup) {
+    return this.appService.signup(payload);
   }
 
   @MessagePattern('signin')
-  signin(dto: ISignin) {
-    return this.appService.signin(dto)
+  signin(payload: ISignin) {
+    return this.appService.signin(payload)
   }
 
   @MessagePattern('refreshToken')
-  refreshToken(refreshToken: string) {
+  refreshToken({ refreshToken }: { refreshToken: string }) {
     return this.appService.refreshToken(refreshToken)
   }
 
