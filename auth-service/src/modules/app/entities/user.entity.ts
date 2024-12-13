@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Role } from "../../../modules/role/entities/role.entity"
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity({ name: "users" })
 export class User {
@@ -22,4 +23,8 @@ export class User {
 
     @Column({ type: "bool", default: false })
     is_verify_email: boolean
+
+    @ManyToMany(() => Role, role => role.users, { onDelete: "CASCADE" })
+    @JoinTable()
+    roles: Role[]
 }
