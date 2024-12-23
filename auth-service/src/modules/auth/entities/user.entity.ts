@@ -1,4 +1,4 @@
-import { Role } from "../../../modules/role/entities/role.entity"
+import { Role } from "../../role/entities/role.entity"
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity({ name: "users" })

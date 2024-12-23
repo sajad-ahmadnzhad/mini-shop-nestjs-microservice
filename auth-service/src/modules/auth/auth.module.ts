@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { ConfigModule } from '@nestjs/config';
 import envConfig from '../../configs/env.config';
 import { JwtModule } from '@nestjs/jwt';
@@ -20,7 +20,7 @@ import { RoleModule } from '../role/role.module';
     }),
     RoleModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AuthController],
+  providers: [AuthService],
 })
-export class AppModule { }
+export class AuthModule { }

@@ -1,5 +1,5 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { User } from "../modules/app/entities/user.entity";
+import { User } from "../modules/auth/entities/user.entity";
 import { Permission } from "../modules/role/entities/permission.entity";
 import { Role } from "../modules/role/entities/role.entity";
 

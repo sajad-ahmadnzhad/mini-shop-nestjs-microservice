@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ISignup } from './interfaces/signup.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { ISignin } from './interfaces/signin.interface';
 import { sendError } from '../../common/utils/functions.utils';
@@ -12,7 +12,7 @@ import { RedisCache } from 'cache-manager-redis-yet';
 import { IGoogleOauthUser } from './interfaces/googleOauth.interface';
 
 @Injectable()
-export class AppService {
+export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
@@ -198,6 +198,15 @@ export class AppService {
     } catch (error) {
       return sendError(error)
     }
+  }
+
+  async findOneAndThrow(args: FindOptionsWhere<User>) {
+    const existingUser = await this.userRepository.findOneBy(args)
+
+    if (!existingUser)
+      throw new NotFoundException('User not found')
+
+    return existingUser
   }
 
 }

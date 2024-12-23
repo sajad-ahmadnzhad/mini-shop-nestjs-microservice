@@ -1,17 +1,21 @@
-import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { IRole } from './interfaces/role.interface';
+import { ConflictException, forwardRef, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { IAssignRole, IRole } from './interfaces/role.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { sendError } from '../../common/utils/functions.utils';
 import { Permission } from './entities/permission.entity';
+import { User } from '../auth/entities/user.entity';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class RoleService {
 
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
-    @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>
+    @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @Inject(forwardRef(() => AuthService)) private readonly authService: AuthService
   ) { }
 
   async create(payload: IRole) {
@@ -41,6 +45,19 @@ export class RoleService {
       }
     } catch (error) {
       return sendError(error)
+    }
+  }
+
+  async assignRoleToUser(payload: IAssignRole) {
+    try {
+      const { roleId, userId } = payload
+
+      const role = await this.findOneAndThrow({ id: roleId })
+
+      const user = await this.authService
+
+    } catch (error) {
+      sendError(error)
     }
   }
 

@@ -1,13 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller } from '@nestjs/common';
+import { AuthService } from './auth.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { ISignup } from './interfaces/signup.interface';
 import { ISignin } from './interfaces/signin.interface';
 import { IGoogleOauthUser } from './interfaces/googleOauth.interface';
 
 @Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) { }
+export class AuthController {
+  constructor(private readonly appService: AuthService) { }
 
   @MessagePattern('signup')
   signup(payload: ISignup) {

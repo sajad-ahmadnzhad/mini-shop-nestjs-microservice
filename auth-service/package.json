@@ -26,6 +26,7 @@
     "amqplib": "^0.10.5",
     "bcrypt": "^5.1.1",
     "cache-manager-redis-yet": "^5.1.5",
+    "dotenv": "^16.4.7",
     "ioredis": "^5.4.1",
     "joi": "^17.13.3",
     "pg": "^8.13.1",
