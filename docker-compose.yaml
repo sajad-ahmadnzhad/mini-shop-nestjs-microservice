@@ -1,0 +1,108 @@
+services:
+  gateway:
+    container_name: gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    depends_on:
+      - auth_service
+    env_file:
+      - ./gateway/.env
+    networks:
+      - app
+    volumes:
+      - ./gateway/src:/app/src
+
+  auth_service:
+    container_name: auth_service
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./auth-service/.env
+    depends_on:
+      - rabbitmq
+      - auth_service_db
+      - auth_service_redis
+    networks:
+      - app
+    volumes:
+      - ./auth-service/src:/app/src
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - app
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  auth_service_db:
+    container_name: auth_service_db
+    image: postgres:14.15-alpine3.21
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    networks:
+      - app
+    volumes:
+      - auth_service_db_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - 4020:80
+    depends_on:
+      - auth_service_db
+    networks:
+      - app
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  auth_service_redis:
+    container_name: auth_service_redis
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - app
+    volumes:
+      - auth_service_redis_data:/data
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - 5540:5540
+    depends_on:
+      - auth_service_redis
+    networks:
+      - app
+    volumes:
+      - redisinsight_data:/data
+
+volumes:
+  rabbitmq_data:
+  auth_service_db_data:
+  pgadmin_data:
+  auth_service_redis_data:
+  redisinsight_data:
+
+networks:
+  app:
+    driver: bridge
