@@ -1,5 +1,5 @@
 import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
-import { IAssignRole, IGetOneRole, IRole, IUpdateRole } from './interfaces/role.interface';
+import { IAssignRole, IGetOneRole, IRemoveRole, IRole, IUpdateRole } from './interfaces/role.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sendError } from '../../common/utils/functions.utils';
@@ -83,4 +83,22 @@ export class RoleService {
     }
   }
 
+  async remove(payload: IRemoveRole) {
+    try {
+      await this.roleRepository.findOneAndThrow({ id: payload.id })
+
+      await this.roleRepository.delete({ id: payload.id })
+
+      return {
+        message: "Role removed successfully",
+        error: false,
+        status: HttpStatus.OK,
+        data: {}
+      }
+    } catch (error) {
+      return sendError(error)
+    }
+  }
+
+  
 }

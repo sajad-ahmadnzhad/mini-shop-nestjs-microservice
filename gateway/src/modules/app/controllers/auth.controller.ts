@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Param, ParseIntPipe, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, Inject, InternalServerErrorException, Param, ParseIntPipe, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiParam, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
@@ -132,6 +132,19 @@ export class AuthController {
         await this.checkConnection()
 
         const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('update-role', { id, ...roleDto }))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
+
+    @Delete('role/:id')
+    async removeRole(@Param('id', ParseIntPipe) id: number) {
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('remove-role', { id }))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)

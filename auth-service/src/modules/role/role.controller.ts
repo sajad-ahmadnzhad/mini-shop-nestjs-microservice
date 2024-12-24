@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { IAssignRole, IGetOneRole, IRole, IUpdateRole } from './interfaces/role.interface';
+import { IAssignRole, IGetOneRole, IRemoveRole, IRole, IUpdateRole } from './interfaces/role.interface';
 
 @Controller()
 export class RoleController {
@@ -25,5 +25,10 @@ export class RoleController {
   @MessagePattern('update-role')
   updateRole(payload: IUpdateRole) {
     return this.roleService.update(payload)
+  }
+
+  @MessagePattern('remove-role')
+  removeRole(payload: IRemoveRole) {
+    return this.roleService.remove(payload);
   }
 }
