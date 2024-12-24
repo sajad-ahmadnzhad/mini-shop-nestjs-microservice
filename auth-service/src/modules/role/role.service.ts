@@ -40,10 +40,17 @@ export class RoleService {
     try {
       const { roleId, userId } = payload
 
-      // const role = await this.findOneAndThrow({ id: roleId })
-      // 
-      // const user = await this.userRepository.find
+      const role = await this.roleRepository.findOneAndThrow({ id: roleId })
+      const user = await this.userRepository.findOneBy({})
 
+      
+
+      return {
+        message: "Assigned role success",
+        error: false,
+        status: HttpStatus.OK,
+        data: {}
+      }
     } catch (error) {
       return sendError(error)
     }
@@ -100,5 +107,4 @@ export class RoleService {
     }
   }
 
-  
 }
