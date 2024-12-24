@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Param, ParseIntPipe, Post, Req, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
@@ -102,6 +102,8 @@ export class AuthController {
     @Post('role')
     @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
     async createRole(@Body() createRoleDto: CreateRoleDto) {
+        await this.checkConnection()
+
         const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('create-role', createRoleDto).pipe(timeout(5000)))
 
         if (data.error) {
@@ -110,4 +112,18 @@ export class AuthController {
 
         return data
     }
+
+    @Get('role/:id')
+    async getOneUser(@Param('id', ParseIntPipe) id: number) {
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('get-one-role', { id }))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
+
 }

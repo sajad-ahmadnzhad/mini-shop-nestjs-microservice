@@ -1,5 +1,5 @@
-import { Transform, Type } from "class-transformer"
-import { ArrayUnique, IsArray, IsEmail, IsEnum, IsJWT, IsLowercase, IsNotEmpty, IsString, Length, ValidateNested } from "class-validator"
+import { Transform } from "class-transformer"
+import { ArrayUnique, IsArray, IsEmail, IsEnum, IsJWT, IsLowercase, IsNotEmpty, IsString, Length } from "class-validator"
 import { ApiProperty } from '@nestjs/swagger'
 import { Action, Resource } from "../enums/user.enum"
 
@@ -67,13 +67,6 @@ export class CreateRoleDto {
     @IsLowercase()
     @Transform(({ value }) => value?.trim())
     name: string
-
-    @ApiProperty({ type: 'array', nullable: false, uniqueItems: true, isArray: true, items: { nullable: false } })
-    @IsArray()
-    @IsNotEmpty()
-    @ValidateNested()
-    @Type(() => CreatePermissionDto)
-    permissions: CreatePermissionDto[]
 }
 
 export class CreatePermissionDto {
