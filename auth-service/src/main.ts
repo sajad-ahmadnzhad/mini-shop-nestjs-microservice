@@ -11,13 +11,6 @@ async function bootstrap() {
     options: {
       urls: [process.env.RABBITMQ_URL],
       queue: process.env.RABBITMQ_QUEUE,
-      queueOptions: {
-        durable: true,
-      },
-      persistent: true,
-      noAck: false,
-      prefetchCount: 2,
-      isGlobalPrefetchCount: true
     }
   });
 

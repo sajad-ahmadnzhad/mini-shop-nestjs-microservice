@@ -1,13 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
-
+import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
-  constructor(@Inject("ORDER_SERVICE") private readonly orderServiceClientProxy: ClientProxy) { }
-
   async getHello() {
-    const data = await lastValueFrom(this.orderServiceClientProxy.send('get-hello', {}))
-    return data
+    return "hello world sajad"
   }
 }

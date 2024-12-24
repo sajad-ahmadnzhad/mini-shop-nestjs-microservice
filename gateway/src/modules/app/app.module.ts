@@ -22,18 +22,22 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
           name: "AUTH_SERVICE",
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://localhost:5672'],
-            queue: "auth-service",
+            urls: [process.env.RABBITMQ_URL],
             queueOptions: {
-              durable: false,
-            }
+              durable: true,
+            },
+            queue: process.env.RABBITMQ_AUTH_SERVICE_QUEUE,
+            persistent: true,
+            noAck: true,
+            prefetchCount: 2,
+            isGlobalPrefetchCount: true
           }
         },
         {
           name: "ORDER_SERVICE",
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://localhost:5672'],
+            urls: [process.env.RABBITMQ_URL],
             queue: "order-service",
             queueOptions: {
               durable: false,
@@ -44,7 +48,7 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
           name: "PAYMENT_SERVICE",
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://localhost:5672'],
+            urls: [process.env.RABBITMQ_URL],
             queue: "payment-service",
             queueOptions: {
               durable: false,
@@ -55,7 +59,7 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
           name: "NOTIFICATION_SERVICE",
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://localhost:5672'],
+            urls: [process.env.RABBITMQ_URL],
             queue: "notification-service",
             queueOptions: {
               durable: false,
@@ -66,7 +70,7 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
           name: "INVENTORY_SERVICE",
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://localhost:5672'],
+            urls: [process.env.RABBITMQ_URL],
             queue: "inventory-service",
             queueOptions: {
               durable: false,
