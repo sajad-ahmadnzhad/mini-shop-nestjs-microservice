@@ -1,8 +1,7 @@
-import { ConflictException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
 import { IAssignRole, IGetOneRole, IRole, IUpdateRole } from './interfaces/role.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role } from './entities/role.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { sendError } from '../../common/utils/functions.utils';
 import { User } from '../auth/entities/user.entity';
 import { RoleRepository } from './role.repository';
@@ -67,11 +66,11 @@ export class RoleService {
 
   async update(payload: IUpdateRole) {
     try {
-      const existingRole = await this.roleRepository.findOneAndThrow({ id: payload.id })
+      await this.roleRepository.findOneAndThrow({ id: payload.id })
 
       await this.roleRepository.isNameTakenAndThrow(payload.name, payload.id)
 
-      const updatedRole = await this.roleRepository.update({ ...payload }, existingRole)
+      await this.roleRepository.update({ id: payload.id }, { name: payload.name })
 
       return {
         message: 'updated role successfully',
