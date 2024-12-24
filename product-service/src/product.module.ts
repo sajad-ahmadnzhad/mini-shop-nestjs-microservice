@@ -5,10 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { typeormConfig } from './configs/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import envConfig from './configs/env.config';
+import { CacheModule } from '@nestjs/cache-manager';
+import cacheConfig from './configs/cache.config';
 @Module({
   imports: [
     ConfigModule.forRoot(envConfig()),
-    TypeOrmModule.forRoot(typeormConfig())
+    TypeOrmModule.forRoot(typeormConfig()),
+    CacheModule.register(cacheConfig())
   ],
   controllers: [ProductController],
   providers: [ProductService],
