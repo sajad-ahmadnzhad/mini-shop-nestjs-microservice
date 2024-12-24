@@ -1,5 +1,5 @@
 import { ConflictException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IAssignRole, IGetOneRole, IRole } from './interfaces/role.interface';
+import { IAssignRole, IGetOneRole, IRole, IUpdateRole } from './interfaces/role.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { FindOptionsWhere, Repository } from 'typeorm';
@@ -52,9 +52,35 @@ export class RoleService {
 
   async findOne(payload: IGetOneRole) {
     try {
-      return await this.roleRepository.findOneById(payload.id);
+      const role = await this.roleRepository.findOneById(payload.id);
+
+      return {
+        message: '',
+        error: false,
+        status: HttpStatus.OK,
+        data: { ...role }
+      }
     } catch (error) {
       return sendError(error);
+    }
+  }
+
+  async update(payload: IUpdateRole) {
+    try {
+      const existingRole = await this.roleRepository.findOneAndThrow({ id: payload.id })
+
+      await this.roleRepository.isNameTakenAndThrow(payload.name, payload.id)
+
+      const updatedRole = await this.roleRepository.update({ ...payload }, existingRole)
+
+      return {
+        message: 'updated role successfully',
+        error: false,
+        status: HttpStatus.OK,
+        data: {}
+      }
+    } catch (error) {
+      return sendError(error)
     }
   }
 

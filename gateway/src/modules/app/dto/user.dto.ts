@@ -1,6 +1,6 @@
 import { Transform } from "class-transformer"
 import { ArrayUnique, IsArray, IsEmail, IsEnum, IsJWT, IsLowercase, IsNotEmpty, IsString, Length } from "class-validator"
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { Action, Resource } from "../enums/user.enum"
 
 export class SignupDto {
@@ -83,3 +83,5 @@ export class CreatePermissionDto {
     @ArrayUnique()
     actions: Action[]
 }
+
+export class UpdateRoleDto extends PartialType(CreateRoleDto) { }

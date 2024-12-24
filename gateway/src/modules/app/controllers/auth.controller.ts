@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Param, ParseIntPipe, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Param, ParseIntPipe, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiParam, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
-import { CreateRoleDto, RefreshTokenDto, SigninDto, SignoutDto, SignupDto } from "../dto/user.dto";
+import { CreateRoleDto, RefreshTokenDto, SigninDto, SignoutDto, SignupDto, UpdateRoleDto } from "../dto/user.dto";
 import { ServiceResponse } from "../../../common/types/serviceResponse.type";
 import { AuthGuard } from "@nestjs/passport";
 import { Request } from "express";
@@ -126,4 +126,17 @@ export class AuthController {
         return data
     }
 
+    @Put('role/:id')
+    @ApiConsumes('application/json', 'application/x-www-form-urlencoded')
+    async updateRole(@Param('id', ParseIntPipe) id: number, @Body() roleDto: UpdateRoleDto) {
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('update-role', { id, ...roleDto }))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
 }

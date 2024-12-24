@@ -10,3 +10,5 @@ export interface IAssignRole {
 export interface IGetOneRole {
     id: number
 }
+
+export interface IUpdateRole extends Partial<IRole>, IGetOneRole {}
