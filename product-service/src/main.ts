@@ -1,14 +1,17 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { ProductModule } from './product.module';
 import { RmqOptions, Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
+import { config } from 'dotenv'
+
+config()
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(AppModule, {
+  const app = await NestFactory.createMicroservice(ProductModule, {
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://localhost:5672'],
-      queue: "inventory-service",
+      urls: [process.env.RABBITMQ_URL],
+      queue: process.env.RABBITMQ_QUEUE_NAME,
       queueOptions: {
         durable: false
       }
@@ -18,6 +21,6 @@ async function bootstrap() {
   const logger = new Logger("NestApplication")
 
   await app.listen();
-  logger.log('Inventory service is running')
+  logger.log('Product service is running')
 }
 bootstrap();
