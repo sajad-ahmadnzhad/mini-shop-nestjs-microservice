@@ -14,12 +14,12 @@ export class Product {
     @Column({ type: "int", nullable: false })
     count: number
 
-    @Column({ type: "int", nullable: false, unique: true })
+    @Column({ type: "int", nullable: false })
     creatorId: number
 
-    @Column({ type: "timestamptz", nullable: false })
+    @Column({ type: "timestamptz", nullable: false, default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date
 
-    @Column({ type: "timestamptz", nullable: false })
+    @Column({ type: "timestamptz", nullable: false, default: () => "CURRENT_TIMESTAMP" })
     updatedAt: Date
 }
