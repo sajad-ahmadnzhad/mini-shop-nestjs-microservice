@@ -17,9 +17,9 @@ export class Product {
     @Column({ type: "int", nullable: false, unique: true })
     creatorId: number
 
-    @Column({ type: "timestamptz", default: () => new Date() })
+    @Column({ type: "timestamptz", nullable: false })
     createdAt: Date
 
-    @Column({ type: "timestamptz", default: () => new Date() })
+    @Column({ type: "timestamptz", nullable: false })
     updatedAt: Date
 }
