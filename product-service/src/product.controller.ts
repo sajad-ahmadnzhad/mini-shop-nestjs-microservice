@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { ClientGrpcProxy, MessagePattern } from '@nestjs/microservices';
+import { MessagePattern } from '@nestjs/microservices';
 import { ICreateProduct } from './interfaces/create-product.interface';
 import { IRemoveProduct } from './interfaces/remove-product.interface';
 

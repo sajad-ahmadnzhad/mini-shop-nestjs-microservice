@@ -1,13 +1,19 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ProductRepository } from './products.repository';
 import { ICreateProduct } from './interfaces/create-product.interface';
 import { sendError } from './common/utils/sendError.utils';
 import { IRemoveProduct } from './interfaces/remove-product.interface';
 import { IUpdateProduct } from './interfaces/update-product.interface';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { RedisCache } from 'cache-manager-redis-yet';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly productRepository: ProductRepository) { }
+  constructor(
+    private readonly productRepository: ProductRepository,
+    @Inject(CACHE_MANAGER) private readonly redisCache: RedisCache
+  ) { }
 
   async create(payload: ICreateProduct) {
     try {
@@ -41,7 +47,15 @@ export class ProductService {
 
   async getAll() {
     try {
-      const products = await this.productRepository.find()
+      const redisKey = 'get_products'
+
+      let products = await this.redisCache.get<Product[] | undefined>(redisKey)
+
+      if (!products) {
+        products = await this.productRepository.find()
+      }
+
+      await this.redisCache.set(redisKey, products, 30_000)
 
       return {
         message: "",
