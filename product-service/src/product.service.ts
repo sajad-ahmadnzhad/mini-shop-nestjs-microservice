@@ -21,4 +21,19 @@ export class ProductService {
       return sendError(error)
     }
   }
+
+  async getOne(payload: { id: number }) {
+    try {
+      const product = await this.productRepository.findOneAndThrow(payload)
+
+      return {
+        message: "",
+        error: false,
+        status: HttpStatus.OK,
+        data: { product }
+      }
+    } catch (error) {
+      return sendError(error)
+    }
+  }
 }

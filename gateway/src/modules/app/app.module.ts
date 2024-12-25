@@ -1,6 +1,4 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import envConfig from '../../configs/env.config';
@@ -60,8 +58,8 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
       ]
     })
   ],
-  controllers: [AppController, NotificationController, ProductController, AuthController],
-  providers: [AppService, GoogleStrategy, {
+  controllers: [NotificationController, ProductController, AuthController],
+  providers: [GoogleStrategy, {
     provide: APP_PIPE,
     useValue: new ValidationPipe({ whitelist: true })
   }],
