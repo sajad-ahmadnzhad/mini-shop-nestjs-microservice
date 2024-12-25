@@ -51,8 +51,6 @@ services:
   auth_service_db:
     container_name: auth_service_db
     image: postgres:14.15-alpine3.21
-    ports:
-      - 5432:5432
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
@@ -65,8 +63,6 @@ services:
   product_service_db:
     container_name: product_service_db
     image: postgres:14.15-alpine3.21
-    ports:
-      - 5432:5432
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
@@ -96,8 +92,6 @@ services:
   auth_service_redis:
     container_name: auth_service_redis
     image: redis
-    ports:
-      - 6379:6379
     networks:
       - app
     volumes:
@@ -106,8 +100,6 @@ services:
   product_service_redis:
     container_name: product_service_redis
     image: redis
-    ports:
-      - 6379:6379
     networks:
       - app
     volumes:
@@ -147,6 +139,8 @@ volumes:
   auth_service_redis_data:
   redisinsight_data:
   product_service_db:
+  product_service_db_data:
+  product_service_redis_data:
 
 
 networks:
