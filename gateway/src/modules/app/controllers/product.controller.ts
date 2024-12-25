@@ -37,7 +37,7 @@ export class ProductController {
     async getOne(@Param('id', ParseIntPipe) id: number) {
         await this.checkConnection()
 
-        const data: ServiceResponse = await lastValueFrom(this.productServiceClientProxy.send('get-one-product', { id }))
+        const data: ServiceResponse = await lastValueFrom(this.productServiceClientProxy.send('get-one-product', { id }).pipe(timeout(5000)))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
@@ -45,4 +45,18 @@ export class ProductController {
 
         return data
     }
+
+    @Get()
+    async getAll() {
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.productServiceClientProxy.send("get-products", {}).pipe(timeout(5000)))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
+
 }

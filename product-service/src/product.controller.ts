@@ -21,4 +21,9 @@ export class ProductController {
   getOne(payload: { id: number }) {
     return this.productService.getOne(payload)
   }
+
+  @MessagePattern('get-products')
+  getAll() {
+    return this.productService.getAll()
+  }
 }

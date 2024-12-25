@@ -36,4 +36,19 @@ export class ProductService {
       return sendError(error)
     }
   }
+
+  async getAll() {
+    try {
+      const products = await this.productRepository.find()
+
+      return {
+        message: "",
+        error: false,
+        status: HttpStatus.OK,
+        data: { products }
+      }
+    } catch (error) {
+      return sendError(error)
+    }
+  }
 }
