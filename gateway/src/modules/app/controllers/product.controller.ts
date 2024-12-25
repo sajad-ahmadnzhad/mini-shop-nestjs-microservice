@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Param, ParseIntPipe, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, Inject, InternalServerErrorException, Param, ParseIntPipe, Post } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
@@ -33,7 +33,7 @@ export class ProductController {
     }
 
 
-    @Get('/:id')
+    @Get(':id')
     async getOne(@Param('id', ParseIntPipe) id: number) {
         await this.checkConnection()
 
@@ -51,6 +51,19 @@ export class ProductController {
         await this.checkConnection()
 
         const data: ServiceResponse = await lastValueFrom(this.productServiceClientProxy.send("get-products", {}).pipe(timeout(5000)))
+
+        if (data.error) {
+            throw new HttpException(data.message, data.status)
+        }
+
+        return data
+    }
+
+    @Delete(':id')
+    async remove(@Param('id', ParseIntPipe) id: number) {
+        await this.checkConnection()
+
+        const data: ServiceResponse = await lastValueFrom(this.productServiceClientProxy.send('remove-product', { id, creatorId: 1 }).pipe(timeout(5000)))
 
         if (data.error) {
             throw new HttpException(data.message, data.status)
