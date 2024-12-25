@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ClientGrpcProxy, MessagePattern } from '@nestjs/microservices';
-import { ICreateProduct } from './interfaces/create-products.interface';
+import { ICreateProduct } from './interfaces/create-product.interface';
 import { IRemoveProduct } from './interfaces/remove-product.interface';
 
 @Controller()
@@ -31,5 +31,10 @@ export class ProductController {
   @MessagePattern('remove-product')
   remove(payload: IRemoveProduct) {
     return this.productService.remove(payload)
+  }
+
+  @MessagePattern('update-product')
+  update(payload: IRemoveProduct) {
+    return this.productService.update(payload)
   }
 }
