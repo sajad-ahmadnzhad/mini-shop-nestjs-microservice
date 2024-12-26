@@ -43,4 +43,9 @@ export class AppService {
     }
   }
 
+ async getRetryCount(messageId: string) {
+    const retryCount = await this.redis.get(messageId)
+    return retryCount ? Number.parseInt(retryCount , 10) : 0
+  }
+
 }
