@@ -3,12 +3,14 @@ import { ISendMail } from "./interfaces/send-mail.interface";
 import * as nodemailer from "nodemailer";
 import { RmqContext } from "@nestjs/microservices";
 import { Channel } from "amqp-connection-manager";
+import { InjectRedis } from "@nestjs-modules/ioredis";
+import Redis from "ioredis";
 
 @Injectable()
 export class AppService {
   private transport: nodemailer.Transporter;
 
-  constructor() {
+  constructor(@InjectRedis() private readonly redis: Redis) {
     const { GMAIL_HOST, GMAIL_USER, GMAIL_PASS, GMAIL_PORT } = process.env;
 
     this.transport = nodemailer.createTransport({
@@ -30,17 +32,15 @@ export class AppService {
     try {
       const { GMAIL_USER } = process.env;
 
-      await this.transport.sendMail({ ...payload, from: GMAIL_USER });
+      // await this.transport.sendMail({ ...payload, from: GMAIL_USER });
 
       channel.ack(message);
       console.log("Email sended successfully");
+
     } catch (error) {
+      channel.ack(message)
       console.error("Send email error:", error);
-
-      const retryCount = message.properties.headers["x-retry-count"] || 0;
-      console.log(retryCount);
-      if (retryCount >= 3) channel.ack(message);
-
     }
   }
+
 }
