@@ -14,7 +14,10 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @EventPattern("send-notification", Transport.RMQ)
-  sendNotification(@Payload() payload: ISendMail, @Ctx() context: RmqContext): void {
+  sendNotification(
+    @Payload() payload: ISendMail,
+    @Ctx() context: RmqContext
+  ): void {
     this.appService.sendWithMail(payload, context);
   }
 }

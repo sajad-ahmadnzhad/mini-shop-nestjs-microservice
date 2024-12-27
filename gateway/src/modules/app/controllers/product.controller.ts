@@ -22,16 +22,8 @@ import { CreateProductDto, UpdateProductDto } from "../dto/product.dto";
 export class ProductController {
   constructor(
     @Inject("PRODUCT_SERVICE")
-    private readonly productServiceClientProxy: ClientProxy,
-    @Inject("NOTIFICATION_SERVICE")
-    private readonly notificationServiceClientProxy: ClientProxy
+    private readonly productServiceClientProxy: ClientProxy
   ) {}
-
-  @Get("notification")
-  notification() {
-    this.notificationServiceClientProxy.emit("send-notification", {});
-    return { message: "success" };
-  }
 
   checkConnection(): Promise<boolean> {
     try {
