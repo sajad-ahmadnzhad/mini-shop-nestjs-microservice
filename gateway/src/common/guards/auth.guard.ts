@@ -1,12 +1,16 @@
-import { CanActivate, ExecutionContext, HttpException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, forwardRef, HttpException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { Request } from "express";
 import { ServiceResponse } from "../types/serviceResponse.type";
 import { lastValueFrom } from "rxjs";
+import { AuthController } from "../../modules/app/controllers/auth.controller";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(@Inject("AUTH_SERVICE") private readonly authServiceClientProxy: ClientProxy) { }
+    constructor(
+        @Inject("AUTH_SERVICE") private readonly authServiceClientProxy: ClientProxy,
+        @Inject(forwardRef(() => AuthController)) private readonly authController: AuthController
+    ) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const req: Request = context.switchToHttp().getRequest()
@@ -24,6 +28,7 @@ export class AuthGuard implements CanActivate {
         if (!token)
             throw new UnauthorizedException('token is required')
 
+        await this.authController.checkConnection()
 
         const verifyTokenRes: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('verify-token', { token }))
 
