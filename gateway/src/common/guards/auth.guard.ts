@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         if (!authorization)
             throw new UnauthorizedException('authorization header is required')
 
-        const [bearer, token] = authorization
+        const [bearer, token] = authorization.split(' ')
 
         if (!bearer || bearer.toLowerCase() !== 'bearer')
             throw new UnauthorizedException('bearer token is invalid')

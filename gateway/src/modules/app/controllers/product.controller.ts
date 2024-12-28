@@ -10,12 +10,15 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
 import { ServiceResponse } from "src/common/types/serviceResponse.type";
 import { CreateProductDto, UpdateProductDto } from "../dto/product.dto";
+import { AuthGuard } from "../../../common/guards/auth.guard";
+import { ResourceGuard } from "../../../common/guards/resource.guard";
 
 @Controller("product")
 @ApiTags("product")
@@ -23,7 +26,7 @@ export class ProductController {
   constructor(
     @Inject("PRODUCT_SERVICE")
     private readonly productServiceClientProxy: ClientProxy
-  ) {}
+  ) { }
 
   checkConnection(): Promise<boolean> {
     try {
@@ -40,6 +43,7 @@ export class ProductController {
   }
 
   @Post()
+  @UseGuards(AuthGuard, ResourceGuard)
   @ApiConsumes("application/json", "application/x-www-form-urlencoded")
   async create(@Body() createProductDto: CreateProductDto) {
     await this.checkConnection();

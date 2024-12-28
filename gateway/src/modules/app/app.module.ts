@@ -58,7 +58,7 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
     })
   ],
   controllers: [ProductController, AuthController],
-  providers: [GoogleStrategy, {
+  providers: [GoogleStrategy, AuthController, {
     provide: APP_PIPE,
     useValue: new ValidationPipe({ whitelist: true })
   }],
