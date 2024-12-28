@@ -217,8 +217,10 @@ export class AuthService {
       if (!verifyToken?.id)
         throw new BadRequestException("Invalid token payload")
 
+      await this.findOneAndThrow({ id: verifyToken.id })
+
       return {
-        message: "verify token success",
+        message: "verified token success",
         error: false,
         status: HttpStatus.OK,
         data: { userId: verifyToken.id }
