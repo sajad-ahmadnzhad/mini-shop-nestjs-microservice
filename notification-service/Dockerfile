@@ -1,7 +1,7 @@
 FROM node:alpine 
 
 RUN addgroup -g 10001 notification_service
-RUN adduser -D -u 10001 -G app-user notification_service
+RUN adduser -D -u 1001 -G notification_service app-user
 
 WORKDIR /app
 
