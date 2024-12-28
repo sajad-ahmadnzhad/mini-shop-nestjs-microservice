@@ -34,6 +34,11 @@ export class AuthController {
     return this.appService.googleRedirect(user)
   }
 
+  @MessagePattern("verify-token")
+  verifyToken(payload: { token: string }) {
+    return this.appService.verifyToken(payload?.token)
+  }
+
   @MessagePattern('checkConnection')
   checkConnection() {
     return true

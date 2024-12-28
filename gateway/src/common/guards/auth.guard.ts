@@ -33,8 +33,8 @@ export class AuthGuard implements CanActivate {
         if (!verifyTokenRes?.data || (verifyTokenRes as any).data?.userId) {
             throw new UnauthorizedException('user account not found')
         }
-
-        const getUser: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('get-one-user', { userId: verifyTokenRes }))
+        const userId = (verifyTokenRes as any).data?.userId
+        const getUser: ServiceResponse = await lastValueFrom(this.authServiceClientProxy.send('get-one-user', { userId }))
 
         if (!getUser.error) {
             throw new HttpException(getUser.message, getUser.status)

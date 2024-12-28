@@ -209,4 +209,22 @@ export class AuthService {
     return existingUser
   }
 
+  async verifyToken(token: string) {
+    try {
+      const { ACCESS_TOKEN_SECRET } = process.env
+      const verifyToken = await this.jwtService.verifyAsync(token, { secret: ACCESS_TOKEN_SECRET })
+
+      if (!verifyToken?.id)
+        throw new BadRequestException("Invalid token payload")
+
+      return {
+        message: "verify token success",
+        error: false,
+        status: HttpStatus.OK,
+        data: { userId: verifyToken.id }
+      }
+    } catch (error) {
+      return sendError(error)
+    }
+  }
 }
