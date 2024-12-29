@@ -9,6 +9,7 @@ import { typeormConfig } from '../../configs/typeorm.config';
 import { CacheModule } from '@nestjs/cache-manager';
 import cacheConfig from '../../configs/cache.config';
 import { RoleModule } from '../role/role.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { RoleModule } from '../role/role.module';
     JwtModule.register({
       global: true,
     }),
-    RoleModule
+    RoleModule,
+    UsersModule
   ],
   controllers: [AuthController],
   providers: [AuthService],

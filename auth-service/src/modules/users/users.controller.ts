@@ -11,8 +11,9 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  findOne(id: string) {
-    return this.usersService.findOne(+id);
+  @MessagePattern("get-one-user")
+  findOne(payload: {id: number}) {
+    return this.usersService.findOne(payload.id);
   }
 
   update(id: string) {

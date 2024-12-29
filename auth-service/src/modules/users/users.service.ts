@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../auth/entities/user.entity";
@@ -25,8 +25,21 @@ export class UsersService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    try {
+      const user = await this.userRepository.findOneBy({ id });
+
+      if (!user) throw new NotFoundException("User not found");
+
+      return {
+        message: "",
+        error: false,
+        status: HttpStatus.OK,
+        data: { user },
+      };
+    } catch (error) {
+      return sendError(error);
+    }
   }
 
   update(id: number) {
