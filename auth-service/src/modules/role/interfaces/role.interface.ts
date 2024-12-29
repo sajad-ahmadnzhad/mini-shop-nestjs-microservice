@@ -21,6 +21,6 @@ export interface IRemoveRole extends IGetOneRole { }
 
 export interface IAccessPermission {
     user: User
-    actions: Action
+    action: Action
     resource: Resource
 }

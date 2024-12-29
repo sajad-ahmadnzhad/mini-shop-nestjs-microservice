@@ -1,58 +1,67 @@
-import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { IAccessPermission, IAssignRole, IGetOneRole, IRemoveRole, IRole, IUpdateRole } from './interfaces/role.interface';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { sendError } from '../../common/utils/functions.utils';
-import { User } from '../auth/entities/user.entity';
-import { RoleRepository } from './role.repository';
+import {
+  ConflictException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import {
+  IAccessPermission,
+  IAssignRole,
+  IGetOneRole,
+  IRemoveRole,
+  IRole,
+  IUpdateRole,
+} from "./interfaces/role.interface";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { sendError } from "../../common/utils/functions.utils";
+import { User } from "../auth/entities/user.entity";
+import { RoleRepository } from "./role.repository";
 
 @Injectable()
 export class RoleService {
-
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly roleRepository: RoleRepository
-  ) { }
+  ) {}
 
   async create(payload: IRole) {
     try {
-      const { name } = payload
+      const { name } = payload;
 
-      const existingRole = await this.roleRepository.findOneBy({ name })
+      const existingRole = await this.roleRepository.findOneBy({ name });
 
       if (existingRole)
-        throw new ConflictException("Role with this name already exists.")
+        throw new ConflictException("Role with this name already exists.");
 
-      await this.roleRepository.createAndSave({ name })
+      await this.roleRepository.createAndSave({ name });
 
       return {
         message: "Role created successfully",
         error: false,
         status: HttpStatus.CREATED,
-        data: {}
-      }
+        data: {},
+      };
     } catch (error) {
-      return sendError(error)
+      return sendError(error);
     }
   }
 
   async assignRoleToUser(payload: IAssignRole) {
     try {
-      const { roleId, userId } = payload
+      const { roleId, userId } = payload;
 
-      const role = await this.roleRepository.findOneAndThrow({ id: roleId })
-      const user = await this.userRepository.findOneBy({})
-
-
+      const role = await this.roleRepository.findOneAndThrow({ id: roleId });
+      const user = await this.userRepository.findOneBy({});
 
       return {
         message: "Assigned role success",
         error: false,
         status: HttpStatus.OK,
-        data: {}
-      }
+        data: {},
+      };
     } catch (error) {
-      return sendError(error)
+      return sendError(error);
     }
   }
 
@@ -61,11 +70,11 @@ export class RoleService {
       const role = await this.roleRepository.findOneById(payload.id);
 
       return {
-        message: '',
+        message: "",
         error: false,
         status: HttpStatus.OK,
-        data: { ...role }
-      }
+        data: { ...role },
+      };
     } catch (error) {
       return sendError(error);
     }
@@ -73,59 +82,68 @@ export class RoleService {
 
   async update(payload: IUpdateRole) {
     try {
-      await this.roleRepository.findOneAndThrow({ id: payload.id })
+      await this.roleRepository.findOneAndThrow({ id: payload.id });
 
-      await this.roleRepository.isNameTakenAndThrow(payload.name, payload.id)
+      await this.roleRepository.isNameTakenAndThrow(payload.name, payload.id);
 
-      await this.roleRepository.update({ id: payload.id }, { name: payload.name })
+      await this.roleRepository.update(
+        { id: payload.id },
+        { name: payload.name }
+      );
 
       return {
-        message: 'updated role successfully',
+        message: "updated role successfully",
         error: false,
         status: HttpStatus.OK,
-        data: {}
-      }
+        data: {},
+      };
     } catch (error) {
-      return sendError(error)
+      return sendError(error);
     }
   }
 
   async remove(payload: IRemoveRole) {
     try {
-      await this.roleRepository.findOneAndThrow({ id: payload.id })
+      await this.roleRepository.findOneAndThrow({ id: payload.id });
 
-      await this.roleRepository.delete({ id: payload.id })
+      await this.roleRepository.delete({ id: payload.id });
 
       return {
         message: "Role removed successfully",
         error: false,
         status: HttpStatus.OK,
-        data: {}
-      }
+        data: {},
+      };
     } catch (error) {
-      return sendError(error)
+      return sendError(error);
     }
   }
-
 
   async accessPermission(payload: IAccessPermission) {
     try {
-      //* ACTIONS=>read,write , ROLES=> admin,user , RESOURCES=> users,products
-      const user = await this.userRepository.findOne({ where: { id: payload.user?.id }, relations: { roles: { permissions: true } } })
+      const user = await this.userRepository.findOne({
+        where: { id: payload.user?.id },
+        relations: { roles: { permissions: true } },
+      });
 
-      if (!user) throw new NotFoundException("User not found")
+      if (!user) throw new NotFoundException("User not found");
 
-      console.log(user)
+      const { resource, action } = payload;
+
+      const hasAccess = user.roles.some((role) =>
+        role.permissions.some(
+          (perm) => perm.resource === resource && perm.actions.includes(action)
+        )
+      );
 
       return {
-        message: "Access is included",
+        message: "",
         error: false,
         status: HttpStatus.OK,
-        data: {}
-      }
+        data: { hasAccess },
+      };
     } catch (error) {
-      return sendError(error)
+      return sendError(error);
     }
   }
-
 }
