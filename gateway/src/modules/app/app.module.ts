@@ -1,11 +1,11 @@
-import { Module, ValidationPipe } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule } from '@nestjs/config';
-import envConfig from '../../configs/env.config';
-import { ProductController } from './controllers/product.controller';
-import { AuthController } from './controllers/auth.controller';
-import { APP_PIPE } from '@nestjs/core';
-import { GoogleStrategy } from '../../common/strategic/google.strategy';
+import { Module, ValidationPipe } from "@nestjs/common";
+import { ClientsModule, Transport } from "@nestjs/microservices";
+import { ConfigModule } from "@nestjs/config";
+import envConfig from "../../configs/env.config";
+import { ProductController } from "./controllers/product.controller";
+import { AuthController } from "./controllers/auth.controller";
+import { APP_PIPE } from "@nestjs/core";
+import { GoogleStrategy } from "../../common/strategic/google.strategy";
 
 @Module({
   imports: [
@@ -25,8 +25,8 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
             persistent: true,
             noAck: true,
             prefetchCount: 2,
-            isGlobalPrefetchCount: true
-          }
+            isGlobalPrefetchCount: true,
+          },
         },
         {
           name: "PRODUCT_SERVICE",
@@ -40,27 +40,35 @@ import { GoogleStrategy } from '../../common/strategic/google.strategy';
             persistent: true,
             noAck: true,
             prefetchCount: 2,
-            isGlobalPrefetchCount: true
-          }
+            isGlobalPrefetchCount: true,
+          },
         },
         {
           name: "NOTIFICATION_SERVICE",
           transport: Transport.RMQ,
           options: {
             urls: [process.env.RABBITMQ_URL],
-            queue: "notification-service",
+            queue: process.env.RABBITMQ_NOTIFICATION_QUEUE_NAME,
             queueOptions: {
-              durable: false,
-            }
-          }
+              durable: true,
+            },
+            persistent: true,
+            noAck: false,
+            prefetchCount: 2,
+            isGlobalPrefetchCount: true,
+          },
         },
-      ]
-    })
+      ],
+    }),
   ],
   controllers: [ProductController, AuthController],
-  providers: [GoogleStrategy, AuthController, {
-    provide: APP_PIPE,
-    useValue: new ValidationPipe({ whitelist: true })
-  }],
+  providers: [
+    GoogleStrategy,
+    AuthController,
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({ whitelist: true }),
+    },
+  ],
 })
-export class AppModule { }
+export class AppModule {}
