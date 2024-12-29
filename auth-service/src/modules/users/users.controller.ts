@@ -16,11 +16,4 @@ export class UsersController {
     return this.usersService.findOne(payload.id);
   }
 
-  update(id: string) {
-    return this.usersService.update(+id);
-  }
-
-  remove(id: string) {
-    return this.usersService.remove(+id);
-  }
 }
