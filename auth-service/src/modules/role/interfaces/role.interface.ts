@@ -1,3 +1,7 @@
+import { Action } from "../../../common/enums/action.enum"
+import { Resource } from "../../../common/enums/resource.enum"
+import { User } from "../../../modules/auth/entities/user.entity"
+
 export interface IRole {
     name: string
 }
@@ -14,3 +18,9 @@ export interface IGetOneRole {
 export interface IUpdateRole extends Partial<IRole>, IGetOneRole { }
 
 export interface IRemoveRole extends IGetOneRole { }
+
+export interface IAccessPermission {
+    user: User
+    actions: Action
+    resource: Resource
+}

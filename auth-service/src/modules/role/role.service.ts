@@ -1,5 +1,5 @@
-import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
-import { IAssignRole, IGetOneRole, IRemoveRole, IRole, IUpdateRole } from './interfaces/role.interface';
+import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { IAccessPermission, IAssignRole, IGetOneRole, IRemoveRole, IRole, IUpdateRole } from './interfaces/role.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sendError } from '../../common/utils/functions.utils';
@@ -43,7 +43,7 @@ export class RoleService {
       const role = await this.roleRepository.findOneAndThrow({ id: roleId })
       const user = await this.userRepository.findOneBy({})
 
-      
+
 
       return {
         message: "Assigned role success",
@@ -98,6 +98,27 @@ export class RoleService {
 
       return {
         message: "Role removed successfully",
+        error: false,
+        status: HttpStatus.OK,
+        data: {}
+      }
+    } catch (error) {
+      return sendError(error)
+    }
+  }
+
+
+  async accessPermission(payload: IAccessPermission) {
+    try {
+      //* ACTIONS=>read,write , ROLES=> admin,user , RESOURCES=> users,products
+      const user = await this.userRepository.findOne({ where: { id: payload.user?.id }, relations: { roles: { permissions: true } } })
+
+      if (!user) throw new NotFoundException("User not found")
+
+      console.log(user)
+
+      return {
+        message: "Access is included",
         error: false,
         status: HttpStatus.OK,
         data: {}
