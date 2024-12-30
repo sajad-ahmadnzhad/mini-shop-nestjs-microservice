@@ -17,6 +17,7 @@ import { ClientProxy } from "@nestjs/microservices";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { lastValueFrom, timeout } from "rxjs";
 import {
+  AssignRoleDto,
   CreateRoleDto,
   RefreshTokenDto,
   SigninDto,
@@ -213,6 +214,19 @@ export class AuthController {
     if (data.error) {
       throw new HttpException(data.message, data.status);
     }
+
+    return data;
+  }
+
+  @Put("assign-role")
+  async assignRoleToUser(@Body() assignRoleDto: AssignRoleDto) {
+    await this.checkConnection();
+
+    const data: ServiceResponse = await lastValueFrom(
+      this.authServiceClientProxy.send("assign-role", assignRoleDto)
+    );
+
+    if (data.error) throw new HttpException(data.message, data.status);
 
     return data;
   }

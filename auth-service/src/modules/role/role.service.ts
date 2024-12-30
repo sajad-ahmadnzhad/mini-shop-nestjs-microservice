@@ -17,7 +17,6 @@ import { Repository } from "typeorm";
 import { sendError } from "../../common/utils/functions.utils";
 import { User } from "../auth/entities/user.entity";
 import { RoleRepository } from "./role.repository";
-
 @Injectable()
 export class RoleService {
   constructor(
@@ -51,8 +50,26 @@ export class RoleService {
     try {
       const { roleId, userId } = payload;
 
-      const role = await this.roleRepository.findOneAndThrow({ id: roleId });
-      const user = await this.userRepository.findOneBy({});
+      const existingRole = await this.roleRepository.findOneAndThrow({
+        id: roleId,
+      });
+      const existingUser = await this.userRepository.findOne({
+        where: { id: userId },
+        relations: { roles: true },
+      });
+
+      if (!existingUser) throw new NotFoundException("User not found");
+
+      const existingRoleInUser = existingUser.roles.some(
+        (role) => role.id == existingRole.id
+      );
+
+      if (existingRoleInUser) {
+        throw new ConflictException("Role already assigned in user");
+      }
+
+      existingUser.roles.push(existingRole);
+      await this.userRepository.save(existingUser);
 
       return {
         message: "Assigned role success",
