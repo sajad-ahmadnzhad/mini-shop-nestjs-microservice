@@ -4,7 +4,7 @@ import { AppService } from "./app.service";
 import { ConfigModule } from "@nestjs/config";
 import * as path from "path";
 import { RedisModule } from "@nestjs-modules/ioredis";
-import redisConfig from "../configs/redis.config";
+import redisConfig from "./configs/redis.config";
 @Module({
   imports: [
     ConfigModule.forRoot({
